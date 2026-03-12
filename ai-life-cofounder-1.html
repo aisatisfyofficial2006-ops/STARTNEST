@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>AI Life Co-Founder</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080f;--surface:#0e1019;--card:#131520;--border:#1e2235;
+  --accent:#4f6ef7;--violet:#7c5cfc;--glow:rgba(79,110,247,.18);
+  --text:#eef0fb;--muted:#6b7280;--success:#22d3a5;--danger:#f43f5e;--warn:#f59e0b;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 var(--glow)}50%{box-shadow:0 0 24px 6px var(--glow)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .4s cubic-bezier(.22,1,.36,1) both}
+.screen{position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column}
+.screen-body{flex:1;overflow-y:auto;padding:18px 16px 80px}
+.hidden{display:none!important}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px}
+.gradient-text{background:linear-gradient(135deg,var(--accent),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mesh-bg{background:radial-gradient(ellipse at 20% 40%,rgba(79,110,247,.13) 0%,transparent 55%),radial-gradient(ellipse at 80% 70%,rgba(124,92,252,.1) 0%,transparent 50%),var(--bg)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--violet));color:#fff;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:opacity .2s,transform .15s;padding:14px 0;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary:active{opacity:.82;transform:scale(.98)}
+.btn-primary.glow{animation:pulseGlow 2.8s ease-in-out infinite}
+.btn-outline{background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:background .2s;padding:12px 0;width:100%;display:flex;align-items:center;justify-content:center}
+.btn-outline:hover{background:rgba(79,110,247,.1)}
+.btn-ghost{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;cursor:pointer;transition:background .2s;padding:9px 14px}
+.btn-ghost:hover{background:var(--border)}
+.btn-danger{background:rgba(244,63,94,.1);color:var(--danger);border:1px solid rgba(244,63,94,.25);border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:500;font-size:14px;cursor:pointer;padding:11px 16px;width:100%;transition:background .2s}
+.btn-danger:hover{background:rgba(244,63,94,.2)}
+input,textarea{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;padding:12px 14px;width:100%}
+input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,110,247,.12)}
+input[type=password]{letter-spacing:.08em}
+textarea{resize:none}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px;font-weight:500}
+.loader{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+.loader-dark{border-color:var(--border);border-top-color:var(--accent)}
+.top-bar{padding:13px 15px 11px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg)}
+.back-btn{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;font-size:18px;cursor:pointer;padding:7px 12px;flex-shrink:0;line-height:1}
+.top-bar h2{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;flex:1}
+.ig{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:44px}
+.pw-toggle{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:4px;line-height:1}
+.online-dot{width:7px;height:7px;border-radius:50%;background:var(--success);display:inline-block;margin-right:4px}
+.err-text{color:var(--danger);font-size:11px;margin-top:4px;display:none;animation:slideDown .25s ease}
+.err-text.show{display:block}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 20px;font-size:13px;opacity:0;transition:all .3s;z-index:9999;white-space:nowrap;pointer-events:none;max-width:92vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.avatar{background:linear-gradient(135deg,var(--accent),var(--violet));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;color:#fff;flex-shrink:0}
+#bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px 6px;cursor:pointer;border:none;background:none;color:var(--muted);font-size:9px;font-family:'DM Sans',sans-serif;gap:3px;transition:color .2s}
+.nav-btn.active{color:var(--accent)}
+.nav-btn span:first-child{font-size:19px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;display:flex;align-items:flex-end;animation:fadeIn .2s ease}
+.modal-sheet{background:var(--card);border-radius:20px 20px 0 0;padding:22px 18px 38px;width:100%;max-height:90vh;overflow-y:auto;animation:fadeUp .3s cubic-bezier(.22,1,.36,1)}
+.strength-bar{height:4px;border-radius:4px;transition:width .3s,background .3s;margin-top:5px}
+/* Auth tabs */
+.auth-tab{flex:1;padding:10px;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .25s}
+/* ── Community ── */
+.cat-tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;font-family:'Syne',sans-serif}
+.cat-idea{background:rgba(79,110,247,.18);color:#7c9fff}
+.cat-question{background:rgba(245,158,11,.18);color:#f59e0b}
+.cat-feedback{background:rgba(34,211,165,.18);color:#22d3a5}
+.cat-marketing{background:rgba(244,63,94,.18);color:#f43f5e}
+.cat-growth{background:rgba(124,92,252,.18);color:#a78bfa}
+.cat-problem{background:rgba(239,68,68,.18);color:#ef4444}
+.post-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 15px;cursor:pointer;transition:border-color .2s,transform .15s}
+.post-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.like-btn{background:none;border:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;font-size:12px;font-family:'DM Sans',sans-serif;padding:5px 8px;border-radius:8px;transition:all .2s}
+.like-btn:hover,.like-btn.liked{color:var(--danger);background:rgba(244,63,94,.1)}
+.like-btn.liked svg{fill:var(--danger)}
+.comm-tab{flex:1;padding:8px 4px;border:none;background:none;color:var(--muted);font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.comm-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.filter-chip{padding:6px 13px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:11px;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:'DM Sans',sans-serif}
+.filter-chip.active{background:linear-gradient(135deg,var(--accent),var(--violet));color:#fff;border-color:transparent}
+.notif-dot{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;background:var(--danger);border:2px solid var(--bg)}
+.notif-item{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
+.notif-item.unread{background:rgba(79,110,247,.06)}
+.comment-item{padding:10px 0;border-bottom:1px solid var(--border)}
+.reply-item{padding:8px 0 8px 16px;border-left:2px solid var(--border);margin-top:6px}
+@keyframes heartPop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
+.heart-pop{animation:heartPop .25s ease}
+select{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;padding:12px 14px;width:100%;cursor:pointer}
+select:focus{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- ═══════════ SPLASH ═══════════ -->
+<div id="screen-splash" class="screen mesh-bg" style="align-items:center;justify-content:center">
+  <div class="fade-up" style="text-align:center">
+    <div style="width:78px;height:78px;background:linear-gradient(135deg,var(--accent),var(--violet));border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 18px;animation:pulseGlow 2s ease-in-out infinite">🚀</div>
+    <h1 style="font-family:'Syne',sans-serif;font-size:27px;font-weight:800"><span class="gradient-text">AI Life</span> Co-Founder</h1>
+    <p style="color:var(--muted);font-size:14px;margin-top:7px">Your personal startup mentor</p>
+    <div class="loader loader-dark" style="margin:34px auto 0"></div>
+  </div>
+</div>
+
+<!-- ═══════════ AUTH ═══════════ -->
+<div id="screen-auth" class="screen mesh-bg hidden" style="overflow-y:auto">
+  <div style="min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 18px">
+    <div class="fade-up" style="text-align:center;margin-bottom:24px">
+      <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--accent),var(--violet));border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px">🚀</div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:23px;font-weight:800"><span class="gradient-text">AI Life</span> Co-Founder</h1>
+      <p style="color:var(--muted);font-size:13px;margin-top:5px">Build your startup with AI</p>
+    </div>
+    <!-- Tab toggle -->
+    <div class="card fade-up" style="width:100%;max-width:420px;padding:5px;display:flex;gap:4px;animation-delay:.05s">
+      <button id="tab-login" class="auth-tab" onclick="switchTab('login')" style="background:linear-gradient(135deg,var(--accent),var(--violet));color:#fff">Login</button>
+      <button id="tab-reg" class="auth-tab" onclick="switchTab('register')" style="background:transparent;color:var(--muted)">Register</button>
+    </div>
+    <!-- LOGIN -->
+    <div id="form-login" class="card fade-up" style="width:100%;max-width:420px;padding:24px;margin-top:10px;animation-delay:.1s">
+      <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:18px">Welcome back 👋</h2>
+      <div class="ig"><label>Email</label><input id="li-email" type="email" placeholder="you@example.com"/><span class="err-text" id="li-email-e"></span></div>
+      <div class="ig"><label>Password</label><div class="pw-wrap"><input id="li-pw" type="password" placeholder="Your password"/><button class="pw-toggle" onclick="togglePw('li-pw',this)">👁</button></div><span class="err-text" id="li-pw-e"></span></div>
+      <div style="text-align:right;margin-bottom:16px"><button onclick="showForgot()" style="background:none;border:none;color:var(--accent);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Forgot password?</button></div>
+      <button class="btn-primary glow" onclick="doLogin()"><span id="li-btn-text">Login to Dashboard</span><span id="li-loader" class="loader hidden"></span></button>
+      <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:14px">No account? <button onclick="switchTab('register')" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px">Register free →</button></p>
+    </div>
+    <!-- REGISTER -->
+    <div id="form-reg" class="card fade-up hidden" style="width:100%;max-width:420px;padding:24px;margin-top:10px;animation-delay:.1s">
+      <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:18px">Create account 🚀</h2>
+      <div class="ig"><label>Full Name</label><input id="rg-name" type="text" placeholder="Your full name"/><span class="err-text" id="rg-name-e"></span></div>
+      <div class="ig"><label>Email</label><input id="rg-email" type="email" placeholder="you@example.com"/><span class="err-text" id="rg-email-e"></span></div>
+      <div class="ig"><label>Password</label><div class="pw-wrap"><input id="rg-pw" type="password" placeholder="Min. 6 characters" oninput="updateStrength(this.value)"/><button class="pw-toggle" onclick="togglePw('rg-pw',this)">👁</button></div><div id="str-bar" class="strength-bar" style="width:0;background:var(--danger)"></div><span id="str-lbl" style="font-size:11px;color:var(--muted)"></span><span class="err-text" id="rg-pw-e"></span></div>
+      <div class="ig"><label>Confirm Password</label><div class="pw-wrap"><input id="rg-pw2" type="password" placeholder="Repeat password"/><button class="pw-toggle" onclick="togglePw('rg-pw2',this)">👁</button></div><span class="err-text" id="rg-pw2-e"></span></div>
+      <div class="ig"><label>Startup Goal (optional)</label><input id="rg-goal" type="text" placeholder="e.g. Build a SaaS, freelance…"/></div>
+      <button class="btn-primary glow" onclick="doRegister()"><span id="rg-btn-text">Create Free Account</span><span id="rg-loader" class="loader hidden"></span></button>
+      <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:14px">Have an account? <button onclick="switchTab('login')" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px">Login →</button></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ONBOARDING ═══════════ -->
+<div id="screen-onboarding" class="screen mesh-bg hidden" style="align-items:center;justify-content:center;padding:22px">
+  <div class="fade-up" style="text-align:center;margin-bottom:24px">
+    <div style="font-size:30px;margin-bottom:10px">🎉</div>
+    <h1 style="font-family:'Syne',sans-serif;font-size:21px;font-weight:800">Set up your profile</h1>
+    <p style="color:var(--muted);font-size:13px;margin-top:5px">Help your AI mentor understand you</p>
+  </div>
+  <div class="card fade-up" style="width:100%;max-width:420px;padding:24px;animation-delay:.1s">
+    <div id="ob-steps" style="display:flex;gap:7px;margin-bottom:20px">
+      <div class="ob-step" style="flex:1;height:3px;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--violet))"></div>
+      <div class="ob-step" style="flex:1;height:3px;border-radius:4px;background:var(--border)"></div>
+      <div class="ob-step" style="flex:1;height:3px;border-radius:4px;background:var(--border)"></div>
+    </div>
+    <div id="ob-icon" style="font-size:26px;margin-bottom:8px">✨</div>
+    <h2 id="ob-title" style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:13px">What are your interests?</h2>
+    <textarea id="ob-input" rows="3" placeholder="e.g. tech, fitness, design, cooking…"></textarea>
+    <button class="btn-primary" style="margin-top:13px" onclick="obNext()">Continue →</button>
+    <button style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;width:100%;margin-top:10px;font-family:'DM Sans',sans-serif" onclick="skipOnboarding()">Skip for now</button>
+  </div>
+</div>
+
+<!-- ═══════════ HOME ═══════════ -->
+<div id="screen-home" class="screen hidden">
+  <div class="mesh-bg" style="padding:26px 15px 16px;flex-shrink:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div>
+        <p style="color:var(--muted);font-size:12px;margin-bottom:3px" id="home-greeting">Good day, Founder 👋</p>
+        <h1 style="font-family:'Syne',sans-serif;font-size:21px;font-weight:800;line-height:1.2">Ready to build<br/><span class="gradient-text">something great?</span></h1>
+      </div>
+      <div id="home-avatar" class="avatar" style="width:46px;height:46px;border-radius:13px;font-size:20px;cursor:pointer" onclick="navTo('profile')">?</div>
+    </div>
+    <div id="home-goal" class="card" style="padding:10px 13px;border-left:3px solid var(--accent);display:none">
+      <p style="font-size:10px;color:var(--muted)">Your goal</p>
+      <p id="home-goal-text" style="font-size:13px;margin-top:1px"></p>
+    </div>
+  </div>
+  <div class="screen-body" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:14px">
+    <div class="card fade-up home-tile" data-s="chat"     style="padding:15px 12px;cursor:pointer;animation-delay:.04s"><div style="font-size:23px;margin-bottom:8px">🤖</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;margin-bottom:2px">AI Mentor Chat</div><div style="color:var(--muted);font-size:11px">Ask anything</div></div>
+    <div class="card fade-up home-tile" data-s="ideas"    style="padding:15px 12px;cursor:pointer;animation-delay:.08s"><div style="font-size:23px;margin-bottom:8px">💡</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;margin-bottom:2px">Idea Generator</div><div style="color:var(--muted);font-size:11px">Turn skills to ideas</div></div>
+    <div class="card fade-up home-tile" data-s="roadmap"  style="padding:15px 12px;cursor:pointer;animation-delay:.12s"><div style="font-size:23px;margin-bottom:8px">🗺️</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;margin-bottom:2px">Startup Roadmap</div><div style="color:var(--muted);font-size:11px">Launch step by step</div></div>
+    <div class="card fade-up home-tile" data-s="tasks"    style="padding:15px 12px;cursor:pointer;animation-delay:.16s"><div style="font-size:23px;margin-bottom:8px">✅</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;margin-bottom:2px">Daily Tasks</div><div style="color:var(--muted);font-size:11px">7-day challenge</div></div>
+    <div class="card fade-up home-tile" data-s="solver"   style="padding:15px 12px;cursor:pointer;animation-delay:.20s"><div style="font-size:23px;margin-bottom:8px">🔧</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;margin-bottom:2px">Problem Solver</div><div style="color:var(--muted);font-size:11px">Fix business issues</div></div>
+    <div class="card fade-up home-tile" data-s="analyzer" style="padding:15px 12px;cursor:pointer;animation-delay:.24s"><div style="font-size:23px;margin-bottom:8px">📊</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;margin-bottom:2px">Idea Analyzer</div><div style="color:var(--muted);font-size:11px">Market check</div></div>
+    <div class="card fade-up home-tile" data-s="saved"    style="padding:15px 12px;cursor:pointer;animation-delay:.28s;grid-column:span 2"><div style="font-size:23px;margin-bottom:8px">⭐</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;margin-bottom:2px">Saved Ideas</div><div style="color:var(--muted);font-size:11px">Your favorites</div></div>
+    <div class="card fade-up home-tile" data-s="community" style="padding:15px 12px;cursor:pointer;animation-delay:.32s;grid-column:span 2;border-left:3px solid var(--accent)"><div style="font-size:23px;margin-bottom:8px">🌐</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;margin-bottom:2px">Startup Community</div><div style="color:var(--muted);font-size:11px">Connect · Share · Grow with founders</div></div>
+  </div>
+</div>
+
+<!-- ═══════════ CHAT ═══════════ -->
+<div id="screen-chat" class="screen hidden">
+  <div class="top-bar">
+    <button class="back-btn" onclick="navTo('home')">←</button>
+    <div style="width:33px;height:33px;background:linear-gradient(135deg,var(--accent),var(--violet));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🤖</div>
+    <div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px">AI Mentor</div><div style="font-size:11px"><span class="online-dot"></span><span style="color:var(--success)">Online</span></div></div>
+    <button class="btn-ghost" style="padding:6px 10px;font-size:12px" onclick="clearChat()">Clear</button>
+  </div>
+  <div id="chat-messages" style="flex:1;overflow-y:auto;padding:12px 13px 6px"></div>
+  <div id="chat-typing" class="hidden" style="padding:4px 18px 6px;display:flex;gap:5px;align-items:center">
+    <div style="width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulseGlow 1s 0s ease-in-out infinite"></div>
+    <div style="width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulseGlow 1s .2s ease-in-out infinite"></div>
+    <div style="width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulseGlow 1s .4s ease-in-out infinite"></div>
+  </div>
+  <div style="padding:10px 11px;display:flex;gap:8px;border-top:1px solid var(--border);flex-shrink:0">
+    <input id="chat-input" placeholder="Ask your AI Co-Founder…" style="flex:1" onkeydown="if(event.key==='Enter')sendChat()"/>
+    <button class="btn-primary" style="width:44px;flex-shrink:0;padding:0;border-radius:11px" onclick="sendChat()">
+      <span id="cs-icon">↑</span><span id="cs-loader" class="loader hidden"></span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ IDEA GENERATOR ═══════════ -->
+<div id="screen-ideas" class="screen hidden">
+  <div class="top-bar"><button class="back-btn" onclick="navTo('home')">←</button><span style="font-size:19px">💡</span><h2>Idea Generator</h2></div>
+  <div class="screen-body">
+    <div class="ig"><label>Budget ($)</label><input id="id-budget" placeholder="e.g. $0, $500, $5000"/></div>
+    <div class="ig"><label>Your Skills</label><input id="id-skills" placeholder="e.g. coding, writing, design"/></div>
+    <div class="ig"><label>Interests</label><input id="id-interests" placeholder="e.g. fitness, tech, food"/></div>
+    <div class="ig"><label>Hours / week</label><input id="id-time" placeholder="e.g. 10, 20, 40"/></div>
+    <button class="btn-primary glow" onclick="genIdeas()"><span id="id-bt">Generate Ideas ✨</span><span id="id-ld" class="loader hidden"></span></button>
+    <div id="id-results" style="margin-top:13px;display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+
+<!-- ═══════════ ROADMAP ═══════════ -->
+<div id="screen-roadmap" class="screen hidden">
+  <div class="top-bar"><button class="back-btn" onclick="navTo('home')">←</button><span style="font-size:19px">🗺️</span><h2>Startup Roadmap</h2></div>
+  <div class="screen-body">
+    <div class="ig"><label>Your Business Idea</label><textarea id="rm-idea" rows="3" placeholder="e.g. A fitness app for busy professionals…"></textarea></div>
+    <button class="btn-primary glow" onclick="genRoadmap()"><span id="rm-bt">Generate Roadmap 🗺️</span><span id="rm-ld" class="loader hidden"></span></button>
+    <div id="rm-results" style="margin-top:13px;display:flex;flex-direction:column;gap:9px"></div>
+  </div>
+</div>
+
+<!-- ═══════════ DAILY TASKS ═══════════ -->
+<div id="screen-tasks" class="screen hidden">
+  <div class="top-bar"><button class="back-btn" onclick="navTo('home')">←</button><span style="font-size:19px">✅</span><h2>Daily Tasks</h2></div>
+  <div class="screen-body">
+    <div class="card" style="padding:13px 15px;margin-bottom:15px;display:flex;align-items:center;gap:12px">
+      <div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;margin-bottom:6px">7-Day Startup Challenge</div><div style="height:5px;background:var(--border);border-radius:4px;overflow:hidden"><div id="task-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--violet));border-radius:4px;transition:width .4s"></div></div></div>
+      <div style="text-align:center"><div id="task-pct" class="gradient-text" style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px">0%</div><div id="task-cnt" style="font-size:11px;color:var(--muted)">0/7</div></div>
+    </div>
+    <div id="task-list" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</div>
+
+<!-- ═══════════ PROBLEM SOLVER ═══════════ -->
+<div id="screen-solver" class="screen hidden">
+  <div class="top-bar"><button class="back-btn" onclick="navTo('home')">←</button><span style="font-size:19px">🔧</span><h2>Problem Solver</h2></div>
+  <div class="screen-body">
+    <div class="ig"><label>Describe your business problem</label><textarea id="sv-input" rows="4" placeholder="e.g. My Instagram has low engagement. I post daily but get 20 likes…"></textarea></div>
+    <button class="btn-primary glow" onclick="solveProblem()"><span id="sv-bt">Solve My Problem 🔧</span><span id="sv-ld" class="loader hidden"></span></button>
+    <div id="sv-result" style="margin-top:13px"></div>
+  </div>
+</div>
+
+<!-- ═══════════ IDEA ANALYZER ═══════════ -->
+<div id="screen-analyzer" class="screen hidden">
+  <div class="top-bar"><button class="back-btn" onclick="navTo('home')">←</button><span style="font-size:19px">📊</span><h2>Idea Analyzer</h2></div>
+  <div class="screen-body">
+    <div class="ig"><label>Your Startup Idea</label><textarea id="an-input" rows="3" placeholder="e.g. A subscription box for indie book authors…"></textarea></div>
+    <button class="btn-primary glow" onclick="analyzeIdea()"><span id="an-bt">Analyze Idea 📊</span><span id="an-ld" class="loader hidden"></span></button>
+    <div id="an-results" style="margin-top:13px;display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+
+<!-- ═══════════ SAVED ═══════════ -->
+<div id="screen-saved" class="screen hidden">
+  <div class="top-bar"><button class="back-btn" onclick="navTo('home')">←</button><span style="font-size:19px">⭐</span><h2>Saved Ideas</h2></div>
+  <div id="saved-body" class="screen-body"></div>
+</div>
+
+<!-- ═══════════ PROFILE ═══════════ -->
+<div id="screen-profile" class="screen hidden">
+  <div class="top-bar"><button class="back-btn" onclick="navTo('home')">←</button><span style="font-size:19px">👤</span><h2>My Profile</h2></div>
+  <div class="screen-body">
+    <!-- Header card -->
+    <div class="card" style="padding:18px;display:flex;align-items:center;gap:13px;margin-bottom:13px">
+      <div id="pf-avatar" class="avatar" style="width:58px;height:58px;border-radius:16px;font-size:24px">?</div>
+      <div style="flex:1;min-width:0">
+        <div id="pf-name" style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+        <div id="pf-email" style="color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+        <div style="margin-top:5px"><span style="font-size:11px;padding:2px 9px;border-radius:20px;background:rgba(79,110,247,.15);color:var(--accent);font-weight:600">Free Plan</span></div>
+      </div>
+      <button class="btn-ghost" style="padding:7px 11px;font-size:12px;flex-shrink:0" onclick="showEditModal()">Edit</button>
+    </div>
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:13px">
+      <div class="card" style="padding:12px 8px;text-align:center"><div id="st-saved" class="gradient-text" style="font-family:'Syne',sans-serif;font-weight:800;font-size:21px">0</div><div style="color:var(--muted);font-size:10px;margin-top:1px">Saved</div></div>
+      <div class="card" style="padding:12px 8px;text-align:center"><div id="st-tasks" class="gradient-text" style="font-family:'Syne',sans-serif;font-weight:800;font-size:21px">0</div><div style="color:var(--muted);font-size:10px;margin-top:1px">Tasks Done</div></div>
+      <div class="card" style="padding:12px 8px;text-align:center"><div id="st-days" class="gradient-text" style="font-family:'Syne',sans-serif;font-weight:800;font-size:21px">1</div><div style="color:var(--muted);font-size:10px;margin-top:1px">Day Streak</div></div>
+    </div>
+    <!-- About -->
+    <div class="card" style="padding:15px;margin-bottom:12px">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:11px">About Me</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div><div style="color:var(--muted);font-size:11px;margin-bottom:1px">🎯 Goal</div><div id="pf-goal" style="font-size:13px">—</div></div>
+        <div><div style="color:var(--muted);font-size:11px;margin-bottom:1px">✨ Interests</div><div id="pf-interests" style="font-size:13px">—</div></div>
+        <div><div style="color:var(--muted);font-size:11px;margin-bottom:1px">⚡ Skills</div><div id="pf-skills" style="font-size:13px">—</div></div>
+      </div>
+    </div>
+    <!-- Change password -->
+    <div class="card" style="padding:15px;margin-bottom:12px">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:11px">🔐 Change Password</div>
+      <div class="ig"><label>Current Password</label><div class="pw-wrap"><input id="cp-old" type="password" placeholder="Current password"/><button class="pw-toggle" onclick="togglePw('cp-old',this)">👁</button></div></div>
+      <div class="ig"><label>New Password</label><div class="pw-wrap"><input id="cp-new" type="password" placeholder="New password (min. 6)"/><button class="pw-toggle" onclick="togglePw('cp-new',this)">👁</button></div></div>
+      <div class="ig"><label>Confirm New Password</label><div class="pw-wrap"><input id="cp-new2" type="password" placeholder="Repeat new password"/><button class="pw-toggle" onclick="togglePw('cp-new2',this)">👁</button></div></div>
+      <button class="btn-outline" style="margin-top:4px" onclick="changePassword()">Update Password</button>
+    </div>
+    <!-- Account actions -->
+    <div class="card" style="padding:15px;border-color:rgba(244,63,94,.2)">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:11px;color:var(--danger)">⚠️ Account</div>
+      <button class="btn-danger" onclick="doLogout()">🚪 Logout</button>
+      <button class="btn-danger" style="margin-top:8px;background:transparent" onclick="deleteAccount()">🗑️ Delete Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     COMMUNITY FEED
+════════════════════════════════════════════════════════ -->
+<div id="screen-community" class="screen hidden">
+  <div class="top-bar" style="gap:8px">
+    <button class="back-btn" onclick="navTo('home')">←</button>
+    <span style="font-size:19px">🌐</span>
+    <h2 style="flex:1">Community</h2>
+    <!-- Notification bell -->
+    <button style="position:relative;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:7px 10px;cursor:pointer;font-size:16px" onclick="navTo('notifs')">
+      🔔<span id="notif-dot" class="notif-dot hidden"></span>
+    </button>
+    <button class="btn-primary" style="width:auto;padding:8px 14px;font-size:13px;border-radius:10px" onclick="navTo('create-post')">+ Post</button>
+  </div>
+
+  <!-- Sub-tabs: Feed / Trending / Search -->
+  <div style="display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg)">
+    <button class="comm-tab active" id="ctab-feed"     onclick="switchCommTab('feed')">🏠 Feed</button>
+    <button class="comm-tab"        id="ctab-trending" onclick="switchCommTab('trending')">🔥 Trending</button>
+    <button class="comm-tab"        id="ctab-search"   onclick="switchCommTab('search')">🔍 Search</button>
+  </div>
+
+  <!-- FEED TAB -->
+  <div id="comm-feed-tab" style="flex:1;overflow-y:auto;display:flex;flex-direction:column">
+    <!-- Filter chips -->
+    <div id="filter-row" style="display:flex;gap:8px;padding:10px 14px;overflow-x:auto;flex-shrink:0;scrollbar-width:none">
+      <button class="filter-chip active" data-cat="all" onclick="filterPosts('all',this)">All</button>
+      <button class="filter-chip" data-cat="Idea" onclick="filterPosts('Idea',this)">💡 Ideas</button>
+      <button class="filter-chip" data-cat="Question" onclick="filterPosts('Question',this)">❓ Questions</button>
+      <button class="filter-chip" data-cat="Marketing" onclick="filterPosts('Marketing',this)">📣 Marketing</button>
+      <button class="filter-chip" data-cat="Feedback" onclick="filterPosts('Feedback',this)">💬 Feedback</button>
+      <button class="filter-chip" data-cat="Growth" onclick="filterPosts('Growth',this)">📈 Growth</button>
+      <button class="filter-chip" data-cat="Problem" onclick="filterPosts('Problem',this)">🔧 Problems</button>
+    </div>
+    <div id="feed-list" style="padding:0 12px 80px;display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+
+  <!-- TRENDING TAB -->
+  <div id="comm-trending-tab" class="hidden" style="flex:1;overflow-y:auto;padding:12px 12px 80px;display:flex;flex-direction:column;gap:10px">
+    <div class="card" style="padding:12px 14px;margin-bottom:4px;border-left:3px solid var(--warn)">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--warn)">🔥 Top Posts This Week</div>
+      <div style="color:var(--muted);font-size:11px;margin-top:2px">Ranked by likes + comments</div>
+    </div>
+    <div id="trending-list" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+
+  <!-- SEARCH TAB -->
+  <div id="comm-search-tab" class="hidden" style="flex:1;overflow-y:auto;display:flex;flex-direction:column">
+    <div style="padding:10px 12px;flex-shrink:0">
+      <input id="comm-search-input" placeholder="Search posts, ideas, questions…" oninput="doSearch(this.value)" style="width:100%"/>
+    </div>
+    <div id="search-results" style="padding:0 12px 80px;display:flex;flex-direction:column;gap:10px">
+      <div style="text-align:center;padding-top:40px;color:var(--muted);font-size:13px">Start typing to search…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CREATE POST ═══════════ -->
+<div id="screen-create-post" class="screen hidden">
+  <div class="top-bar"><button class="back-btn" onclick="navTo('community')">←</button><span style="font-size:19px">✍️</span><h2>Create Post</h2></div>
+  <div class="screen-body">
+    <div class="ig"><label>Post Title *</label><input id="cp-title" type="text" placeholder="e.g. How do I validate my SaaS idea?" maxlength="100"/></div>
+    <div class="ig"><label>Description *</label><textarea id="cp-desc" rows="5" placeholder="Share your idea, question, or insight in detail…" maxlength="1000"></textarea><div id="cp-desc-cnt" style="text-align:right;font-size:10px;color:var(--muted);margin-top:3px">0 / 1000</div></div>
+    <div class="ig">
+      <label>Category *</label>
+      <select id="cp-cat">
+        <option value="">Select a category…</option>
+        <option value="Idea">💡 Startup Idea</option>
+        <option value="Question">❓ Question</option>
+        <option value="Problem">🔧 Problem</option>
+        <option value="Marketing">📣 Marketing Help</option>
+        <option value="Feedback">💬 Feedback Request</option>
+        <option value="Growth">📈 Growth Tips</option>
+      </select>
+    </div>
+    <button class="btn-primary glow" onclick="publishPost()" style="margin-top:6px">Publish Post 🚀</button>
+    <button class="btn-ghost" style="width:100%;margin-top:9px" onclick="navTo('community')">Cancel</button>
+  </div>
+</div>
+
+<!-- ═══════════ POST DETAIL ═══════════ -->
+<div id="screen-post-detail" class="screen hidden">
+  <div class="top-bar"><button class="back-btn" onclick="navTo('community')">←</button><h2>Discussion</h2><button id="pd-report-btn" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px" onclick="reportPost()">⚠️</button></div>
+  <div style="flex:1;overflow-y:auto;padding:14px 14px 90px">
+    <!-- Post body -->
+    <div id="pd-body"></div>
+    <!-- Comments header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 10px">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px" id="pd-comment-count">💬 0 Comments</div>
+    </div>
+    <!-- Add comment -->
+    <div class="card" style="padding:12px;margin-bottom:12px;display:flex;gap:8px;align-items:flex-start" id="pd-comment-box">
+      <div id="pd-my-avatar" class="avatar" style="width:30px;height:30px;border-radius:8px;font-size:13px;flex-shrink:0">?</div>
+      <div style="flex:1">
+        <textarea id="pd-comment-input" rows="2" placeholder="Write a comment…" style="font-size:13px"></textarea>
+        <button class="btn-primary" style="margin-top:7px;padding:9px 0;font-size:13px" onclick="postComment()">Post Comment</button>
+      </div>
+    </div>
+    <!-- Comments list -->
+    <div id="pd-comments-list" style="display:flex;flex-direction:column;gap:0"></div>
+  </div>
+</div>
+
+<!-- ═══════════ USER PROFILE (community) ═══════════ -->
+<div id="screen-user-profile" class="screen hidden">
+  <div class="top-bar"><button class="back-btn" onclick="history.back ? communityBack() : navTo('community')">←</button><h2 id="up-title">Profile</h2></div>
+  <div class="screen-body">
+    <div class="card" style="padding:18px;display:flex;align-items:center;gap:13px;margin-bottom:13px">
+      <div id="up-avatar" class="avatar" style="width:56px;height:56px;border-radius:16px;font-size:22px">?</div>
+      <div style="flex:1">
+        <div id="up-name" style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px">—</div>
+        <div id="up-joined" style="color:var(--muted);font-size:12px;margin-top:2px">—</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:13px">
+      <div class="card" style="padding:12px 8px;text-align:center"><div id="up-posts-cnt" class="gradient-text" style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px">0</div><div style="color:var(--muted);font-size:10px;margin-top:1px">Posts</div></div>
+      <div class="card" style="padding:12px 8px;text-align:center"><div id="up-likes-cnt" class="gradient-text" style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px">0</div><div style="color:var(--muted);font-size:10px;margin-top:1px">Likes Got</div></div>
+      <div class="card" style="padding:12px 8px;text-align:center"><div id="up-comments-cnt" class="gradient-text" style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px">0</div><div style="color:var(--muted);font-size:10px;margin-top:1px">Comments</div></div>
+    </div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:10px">Posts by this user</div>
+    <div id="up-posts-list" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+
+<!-- ═══════════ NOTIFICATIONS ═══════════ -->
+<div id="screen-notifs" class="screen hidden">
+  <div class="top-bar">
+    <button class="back-btn" onclick="navTo('community')">←</button>
+    <span style="font-size:19px">🔔</span><h2>Notifications</h2>
+    <button class="btn-ghost" style="padding:6px 10px;font-size:11px" onclick="clearNotifs()">Clear all</button>
+  </div>
+  <div id="notifs-list" style="flex:1;overflow-y:auto;padding-bottom:80px"></div>
+</div>
+
+<!-- ═══════════ BOTTOM NAV ═══════════ -->
+<nav id="bottom-nav" class="hidden">
+  <button class="nav-btn active" id="nav-home"      onclick="navTo('home')">      <span>🏠</span><span>Home</span></button>
+  <button class="nav-btn"        id="nav-chat"      onclick="navTo('chat')">      <span>🤖</span><span>Chat</span></button>
+  <button class="nav-btn"        id="nav-community" onclick="navTo('community')"> <span>🌐</span><span>Community</span></button>
+  <button class="nav-btn"        id="nav-saved"     onclick="navTo('saved')">     <span>⭐</span><span>Saved</span></button>
+  <button class="nav-btn"        id="nav-profile"   onclick="navTo('profile')">   <span>👤</span><span>Profile</span></button>
+</nav>
+
+<!-- ═══════════ EDIT PROFILE MODAL ═══════════ -->
+<div id="edit-modal" class="modal-overlay hidden">
+  <div class="modal-sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px">Edit Profile</h3>
+      <button onclick="hideEditModal()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer">×</button>
+    </div>
+    <div class="ig"><label>Full Name</label><input id="ep-name" type="text"/></div>
+    <div class="ig"><label>Goal</label><input id="ep-goal" type="text" placeholder="e.g. Build a SaaS…"/></div>
+    <div class="ig"><label>Interests</label><input id="ep-interests" type="text" placeholder="e.g. tech, fitness…"/></div>
+    <div class="ig"><label>Skills</label><input id="ep-skills" type="text" placeholder="e.g. coding, marketing…"/></div>
+    <button class="btn-primary" onclick="saveEdit()">Save Changes ✓</button>
+    <button class="btn-ghost" style="margin-top:9px;width:100%" onclick="hideEditModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ═══════════ FORGOT PASSWORD MODAL ═══════════ -->
+<div id="forgot-modal" class="modal-overlay hidden">
+  <div class="modal-sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px">Reset Password</h3>
+      <button onclick="hideForgot()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer">×</button>
+    </div>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Enter your registered email and a new password.</p>
+    <div class="ig"><label>Email</label><input id="fg-email" type="email" placeholder="you@example.com"/></div>
+    <div class="ig"><label>New Password</label><div class="pw-wrap"><input id="fg-pw" type="password" placeholder="New password"/><button class="pw-toggle" onclick="togglePw('fg-pw',this)">👁</button></div></div>
+    <button class="btn-primary" onclick="doForgot()">Reset Password</button>
+    <button class="btn-ghost" style="margin-top:9px;width:100%" onclick="hideForgot()">Cancel</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+let CU = null; // current user object
+let taskDone = {};
+let obStep = 0;
+const obTemp = {};
+let chatInited = false;
+const OB = [
+  {k:'interests',icon:'✨',title:'What are your interests?',ph:'e.g. tech, fitness, design…'},
+  {k:'goals',    icon:'🎯',title:"What's your startup goal?",ph:'e.g. build a SaaS, freelance…'},
+  {k:'skills',   icon:'⚡',title:'What are your top skills?', ph:'e.g. coding, marketing, writing…'},
+];
+const PCOLORS=['#4f6ef7','#7c5cfc','#f59e0b','#22d3a5','#f43f5e','#06b6d4','#a855f7','#ec4899'];
+const TASKS=[
+  {day:1,icon:'💡',title:'Validate Your Idea',desc:'Talk to 5 potential customers'},
+  {day:2,icon:'🔭',title:'Research Competitors',desc:'Map 3-5 direct competitors'},
+  {day:3,icon:'📱',title:'Create Social Pages',desc:'Set up Instagram & LinkedIn'},
+  {day:4,icon:'🤝',title:'Find First Customer',desc:'Reach out to 10 warm leads'},
+  {day:5,icon:'🚀',title:'Launch Your MVP',desc:'Ship a minimal working version'},
+  {day:6,icon:'📋',title:'Collect Feedback',desc:'Ask 3 users for honest feedback'},
+  {day:7,icon:'🔄',title:'Iterate & Improve',desc:'Make one data-driven improvement'},
+];
+
+// ════════════════════════════════════════════
+// STORAGE
+// ════════════════════════════════════════════
+const getUsers = () => { try{return JSON.parse(localStorage.getItem('aicf_users')||'{}')}catch{return {}} };
+const setUsers = u => localStorage.setItem('aicf_users', JSON.stringify(u));
+const getSess  = () => { try{return JSON.parse(sessionStorage.getItem('aicf_sess')||'null')}catch{return null} };
+const setSess  = u => sessionStorage.setItem('aicf_sess', JSON.stringify(u));
+const clrSess  = () => sessionStorage.removeItem('aicf_sess');
+const uKey     = e => 'aicf_d_' + e.toLowerCase().replace(/[^a-z0-9]/g,'_');
+const getUD    = e => { try{return JSON.parse(localStorage.getItem(uKey(e))||'{"saved":[],"taskDone":{}}')}catch{return {saved:[],taskDone:{}}} };
+const setUD    = (e,d) => localStorage.setItem(uKey(e), JSON.stringify(d));
+
+// ════════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════════
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const sess = getSess();
+    if (sess) {
+      const u = getUsers()[sess.email];
+      if (u) { loginOK(u); return; }
+    }
+    show('auth');
+  }, 1300);
+});
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+const NAV_IDS = ['home','chat','tasks','saved','profile','community','create-post','post-detail','user-profile','notifs'];
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById('screen-'+id).classList.remove('hidden');
+  const nav = document.getElementById('bottom-nav');
+  nav.classList.toggle('hidden', !NAV_IDS.includes(id));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const nb = document.getElementById('nav-'+id);
+  if (nb) nb.classList.add('active');
+}
+function navTo(id) {
+  show(id);
+  if (id==='tasks')        renderTasks();
+  if (id==='saved')        renderSaved();
+  if (id==='chat')         initChat();
+  if (id==='profile')      renderProfile();
+  if (id==='community')    initCommunity();
+  if (id==='notifs')       renderNotifs();
+}
+document.querySelectorAll('.home-tile').forEach(t => {
+  t.addEventListener('click', () => navTo(t.dataset.s));
+  t.addEventListener('mouseenter', () => t.style.transform='translateY(-2px)');
+  t.addEventListener('mouseleave', () => t.style.transform='');
+});
+
+// ════════════════════════════════════════════
+// AUTH TABS
+// ════════════════════════════════════════════
+function switchTab(tab) {
+  const isLogin = tab==='login';
+  document.getElementById('form-login').classList.toggle('hidden',!isLogin);
+  document.getElementById('form-reg').classList.toggle('hidden',isLogin);
+  document.getElementById('tab-login').style.cssText = isLogin
+    ? 'background:linear-gradient(135deg,var(--accent),var(--violet));color:#fff'
+    : 'background:transparent;color:var(--muted)';
+  document.getElementById('tab-reg').style.cssText = !isLogin
+    ? 'background:linear-gradient(135deg,var(--accent),var(--violet));color:#fff'
+    : 'background:transparent;color:var(--muted)';
+}
+
+// ════════════════════════════════════════════
+// LOGIN
+// ════════════════════════════════════════════
+function doLogin() {
+  clrE(['li-email','li-pw']);
+  const email = v('li-email').trim().toLowerCase();
+  const pw    = v('li-pw');
+  let ok = true;
+  if (!email || !validEmail(email)) { setE('li-email','Enter a valid email'); ok=false; }
+  if (!pw) { setE('li-pw','Enter your password'); ok=false; }
+  if (!ok) return;
+  setLd('li',true);
+  setTimeout(() => {
+    const users = getUsers();
+    const u = users[email];
+    if (!u) { setE('li-email','No account found with this email'); setLd('li',false); return; }
+    if (u.password !== hp(pw)) { setE('li-pw','Incorrect password'); shakeEl('form-login'); setLd('li',false); return; }
+    setLd('li',false);
+    loginOK(u);
+  }, 750);
+}
+
+// ════════════════════════════════════════════
+// REGISTER
+// ════════════════════════════════════════════
+function doRegister() {
+  clrE(['rg-name','rg-email','rg-pw','rg-pw2']);
+  const name  = v('rg-name').trim();
+  const email = v('rg-email').trim().toLowerCase();
+  const pw    = v('rg-pw');
+  const pw2   = v('rg-pw2');
+  const goal  = v('rg-goal').trim();
+  let ok = true;
+  if (!name)                  { setE('rg-name','Enter your full name'); ok=false; }
+  if (!email||!validEmail(email)){ setE('rg-email','Enter a valid email'); ok=false; }
+  if (pw.length<6)            { setE('rg-pw','Password must be at least 6 characters'); ok=false; }
+  if (pw!==pw2)               { setE('rg-pw2','Passwords do not match'); ok=false; }
+  if (!ok) return;
+  setLd('rg',true);
+  setTimeout(() => {
+    const users = getUsers();
+    if (users[email]) { setE('rg-email','Account already exists with this email'); setLd('rg',false); return; }
+    const u = {email,name,password:hp(pw),goal,interests:'',skills:'',joined:new Date().toISOString()};
+    users[email] = u;
+    setUsers(users);
+    setLd('rg',false);
+    toast('🎉 Account created! Welcome!');
+    loginOK(u);
+  }, 800);
+}
+
+// ════════════════════════════════════════════
+// LOGIN SUCCESS
+// ════════════════════════════════════════════
+function loginOK(u) {
+  CU = u;
+  setSess({email:u.email});
+  const ud = getUD(u.email);
+  taskDone = ud.taskDone || {};
+  updateHomeUI();
+  if (!u.interests && !u.skills) {
+    obStep = 0; obTemp.goals = u.goal||'';
+    updateOB();
+    show('onboarding');
+  } else {
+    show('home');
+  }
+}
+
+// ════════════════════════════════════════════
+// LOGOUT / DELETE
+// ════════════════════════════════════════════
+function doLogout() {
+  if (!confirm('Logout?')) return;
+  clrSess(); CU=null; chatInited=false;
+  document.getElementById('chat-messages').innerHTML='';
+  show('auth'); switchTab('login');
+  toast('👋 Logged out');
+}
+function deleteAccount() {
+  if (!confirm('Permanently delete your account and all data?')) return;
+  const users=getUsers(); delete users[CU.email]; setUsers(users);
+  localStorage.removeItem(uKey(CU.email));
+  clrSess(); CU=null;
+  show('auth');
+  toast('Account deleted');
+}
+
+// ════════════════════════════════════════════
+// FORGOT PASSWORD
+// ════════════════════════════════════════════
+function showForgot(){ document.getElementById('forgot-modal').classList.remove('hidden'); }
+function hideForgot(){ document.getElementById('forgot-modal').classList.add('hidden'); }
+function doForgot() {
+  const email=v('fg-email').trim().toLowerCase();
+  const pw=v('fg-pw');
+  if(!email||!validEmail(email)){toast('⚠️ Enter a valid email');return;}
+  if(pw.length<6){toast('⚠️ Password must be 6+ characters');return;}
+  const users=getUsers();
+  if(!users[email]){toast('⚠️ No account found with that email');return;}
+  users[email].password=hp(pw);
+  setUsers(users);
+  hideForgot();
+  toast('✅ Password reset! You can now login.');
+}
+
+// ════════════════════════════════════════════
+// CHANGE PASSWORD (profile)
+// ════════════════════════════════════════════
+function changePassword() {
+  const old=v('cp-old'), nw=v('cp-new'), nw2=v('cp-new2');
+  if(!old){toast('⚠️ Enter your current password');return;}
+  if(CU.password!==hp(old)){toast('⚠️ Current password is incorrect');return;}
+  if(nw.length<6){toast('⚠️ New password must be 6+ chars');return;}
+  if(nw!==nw2){toast('⚠️ New passwords do not match');return;}
+  const users=getUsers();
+  users[CU.email].password=hp(nw);
+  CU.password=hp(nw);
+  setUsers(users);
+  ['cp-old','cp-new','cp-new2'].forEach(id=>document.getElementById(id).value='');
+  toast('✅ Password changed!');
+}
+
+// ════════════════════════════════════════════
+// ONBOARDING
+// ════════════════════════════════════════════
+function updateOB() {
+  const d=OB[obStep];
+  document.getElementById('ob-icon').textContent=d.icon;
+  document.getElementById('ob-title').textContent=d.title;
+  const inp=document.getElementById('ob-input');
+  inp.value=obTemp[d.k]||''; inp.placeholder=d.ph;
+  document.querySelectorAll('.ob-step').forEach((el,i)=>{
+    el.style.background=i<=obStep?'linear-gradient(90deg,var(--accent),var(--violet))':'var(--border)';
+  });
+  document.querySelector('#screen-onboarding .btn-primary').textContent=
+    obStep===OB.length-1?'Start My Journey 🚀':'Continue →';
+}
+function obNext() {
+  obTemp[OB[obStep].k]=document.getElementById('ob-input').value.trim();
+  obStep++;
+  if(obStep>=OB.length){ saveOB(); return; }
+  updateOB();
+}
+function skipOnboarding(){ saveOB(); }
+function saveOB() {
+  const users=getUsers();
+  CU.interests=obTemp.interests||'';
+  CU.goal=obTemp.goals||CU.goal||'';
+  CU.skills=obTemp.skills||'';
+  users[CU.email]=CU; setUsers(users);
+  updateHomeUI(); show('home');
+}
+document.getElementById('ob-input').addEventListener('keydown',e=>{if(e.key==='Enter')obNext();});
+
+// ════════════════════════════════════════════
+// HOME UI
+// ════════════════════════════════════════════
+function updateHomeUI() {
+  if(!CU) return;
+  const fn=CU.name?CU.name.split(' ')[0]:'Founder';
+  document.getElementById('home-greeting').textContent=`Good day, ${fn} 👋`;
+  document.getElementById('home-avatar').textContent=fn[0].toUpperCase();
+  if(CU.goal){document.getElementById('home-goal').style.display='block';document.getElementById('home-goal-text').textContent=CU.goal;}
+}
+
+// ════════════════════════════════════════════
+// PROFILE
+// ════════════════════════════════════════════
+function renderProfile() {
+  if(!CU) return;
+  const fn=CU.name?CU.name.split(' ')[0]:'?';
+  document.getElementById('pf-avatar').textContent=fn[0].toUpperCase();
+  document.getElementById('pf-name').textContent=CU.name||'—';
+  document.getElementById('pf-email').textContent=CU.email||'—';
+  document.getElementById('pf-goal').textContent=CU.goal||'Not set';
+  document.getElementById('pf-interests').textContent=CU.interests||'Not set';
+  document.getElementById('pf-skills').textContent=CU.skills||'Not set';
+  const ud=getUD(CU.email);
+  document.getElementById('st-saved').textContent=(ud.saved||[]).length;
+  document.getElementById('st-tasks').textContent=Object.values(taskDone).filter(Boolean).length;
+  const days=CU.joined?Math.max(1,Math.ceil((Date.now()-new Date(CU.joined))/(864e5))):1;
+  document.getElementById('st-days').textContent=days;
+}
+function showEditModal() {
+  document.getElementById('ep-name').value=CU.name||'';
+  document.getElementById('ep-goal').value=CU.goal||'';
+  document.getElementById('ep-interests').value=CU.interests||'';
+  document.getElementById('ep-skills').value=CU.skills||'';
+  document.getElementById('edit-modal').classList.remove('hidden');
+}
+function hideEditModal(){ document.getElementById('edit-modal').classList.add('hidden'); }
+function saveEdit() {
+  const nm=document.getElementById('ep-name').value.trim();
+  if(!nm){toast('⚠️ Name cannot be empty');return;}
+  CU.name=nm; CU.goal=document.getElementById('ep-goal').value.trim();
+  CU.interests=document.getElementById('ep-interests').value.trim();
+  CU.skills=document.getElementById('ep-skills').value.trim();
+  const users=getUsers(); users[CU.email]=CU; setUsers(users);
+  hideEditModal(); renderProfile(); updateHomeUI();
+  toast('✅ Profile updated!');
+}
+
+// ════════════════════════════════════════════
+// CLAUDE API
+// ════════════════════════════════════════════
+async function askClaude(sys,usr) {
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:usr}]})
+  });
+  const d=await r.json();
+  return d.content?.map(b=>b.text||'').join('\n')||'Something went wrong.';
+}
+
+// ════════════════════════════════════════════
+// CHAT
+// ════════════════════════════════════════════
+function initChat() {
+  if(chatInited) return; chatInited=true;
+  const fn=CU?.name?.split(' ')[0]||'Founder';
+  addMsg('ai',`Hey ${fn}! I'm your AI Co-Founder 🚀 I know you're into **${CU?.interests||'startups'}** and want to **${CU?.goal||'build something great'}**. Ask me anything!`);
+}
+function addMsg(role,text) {
+  const wrap=document.getElementById('chat-messages');
+  const d=document.createElement('div');
+  d.style.cssText=`display:flex;justify-content:${role==='user'?'flex-end':'flex-start'};margin-bottom:9px`;
+  const b=document.createElement('div');
+  b.style.cssText=`max-width:82%;padding:10px 13px;border-radius:${role==='user'?'17px 17px 4px 17px':'17px 17px 17px 4px'};background:${role==='user'?'linear-gradient(135deg,var(--accent),var(--violet))':'var(--card)'};border:${role==='ai'?'1px solid var(--border)':'none'};font-size:13px;line-height:1.6;white-space:pre-wrap;animation:fadeUp .3s both`;
+  b.textContent=text; d.appendChild(b); wrap.appendChild(d);
+  wrap.scrollTop=wrap.scrollHeight;
+}
+function clearChat(){ document.getElementById('chat-messages').innerHTML=''; chatInited=false; initChat(); }
+async function sendChat() {
+  const inp=document.getElementById('chat-input');
+  const q=inp.value.trim(); if(!q) return; inp.value='';
+  addMsg('user',q);
+  document.getElementById('cs-icon').classList.add('hidden');
+  document.getElementById('cs-loader').classList.remove('hidden');
+  document.getElementById('chat-typing').classList.remove('hidden');
+  try{
+    const r=await askClaude(`You are an expert startup mentor. User: ${CU?.name}. Interests: ${CU?.interests}. Goals: ${CU?.goal}. Skills: ${CU?.skills}. Give concise, actionable advice under 200 words.`,q);
+    addMsg('ai',r);
+  }catch{ addMsg('ai','Connection error. Please try again.'); }
+  document.getElementById('cs-icon').classList.remove('hidden');
+  document.getElementById('cs-loader').classList.add('hidden');
+  document.getElementById('chat-typing').classList.add('hidden');
+}
+
+// ════════════════════════════════════════════
+// IDEA GENERATOR
+// ════════════════════════════════════════════
+async function genIdeas() {
+  const budget=v('id-budget'), skills=v('id-skills')||CU?.skills, interests=v('id-interests')||CU?.interests, time=v('id-time');
+  if(!skills&&!interests){toast('⚠️ Enter your skills or interests');return;}
+  setLd('id',true); document.getElementById('id-results').innerHTML='';
+  try{
+    const raw=await askClaude(
+      `You are a startup idea generator. Respond ONLY in valid JSON, no markdown: {"ideas":[{"name":"","tagline":"","howToStart":"","income":"","difficulty":"Easy|Medium|Hard"}]} with exactly 3 ideas.`,
+      `Budget:${budget||'minimal'}. Skills:${skills}. Interests:${interests}. Hours/week:${time||'10'}.`);
+    const p=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const res=document.getElementById('id-results');
+    p.ideas.forEach((idea,i)=>{
+      const dc=idea.difficulty==='Easy'?'#22d3a5':idea.difficulty==='Hard'?'#f43f5e':'#f59e0b';
+      const db=idea.difficulty==='Easy'?'rgba(34,211,165,.15)':idea.difficulty==='Hard'?'rgba(244,63,94,.15)':'rgba(245,158,11,.15)';
+      const c=document.createElement('div'); c.className='card fade-up'; c.style.cssText=`padding:15px;animation-delay:${i*.09}s`;
+      c.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px"><h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;flex:1;margin-right:9px">${esc(idea.name)}</h3><span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${db};color:${dc};flex-shrink:0">${esc(idea.difficulty)}</span></div><p style="color:var(--muted);font-size:12px;margin-bottom:9px">${esc(idea.tagline)}</p>${idea.howToStart?`<p style="font-size:12px;margin-bottom:5px"><strong>How to start:</strong> ${esc(idea.howToStart)}</p>`:''} ${idea.income?`<p style="font-size:12px;color:var(--success)"><strong>Income:</strong> ${esc(idea.income)}</p>`:''}<button class="btn-ghost" style="margin-top:10px;font-size:11px" onclick='saveItem(${JSON.stringify(JSON.stringify({name:idea.name,tagline:idea.tagline,income:idea.income,difficulty:idea.difficulty}))})'>⭐ Save</button>`;
+      res.appendChild(c);
+    });
+  }catch{ document.getElementById('id-results').innerHTML='<div class="card" style="padding:13px;color:var(--muted)">Could not parse. Try again.</div>'; }
+  setLd('id',false);
+}
+
+// ════════════════════════════════════════════
+// ROADMAP
+// ════════════════════════════════════════════
+async function genRoadmap() {
+  const idea=document.getElementById('rm-idea').value.trim();
+  if(!idea){toast('⚠️ Enter your business idea');return;}
+  setLd('rm',true); document.getElementById('rm-results').innerHTML='';
+  try{
+    const raw=await askClaude(
+      `You are a startup launch expert. Respond ONLY in valid JSON, no markdown: {"steps":[{"title":"","desc":"","duration":""}]} with 6-7 phases.`,
+      `Business idea: ${idea}`);
+    const p=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const res=document.getElementById('rm-results');
+    p.steps.forEach((s,i)=>{
+      const col=PCOLORS[i%PCOLORS.length];
+      const c=document.createElement('div'); c.className='card fade-up'; c.style.cssText=`padding:12px 14px;animation-delay:${i*.07}s;border-left:3px solid ${col}`;
+      c.innerHTML=`<div style="display:flex;align-items:center;gap:9px"><div style="width:23px;height:23px;border-radius:6px;background:${col};display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'Syne',sans-serif;font-weight:700;flex-shrink:0;color:#fff">${i+1}</div><div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px">${esc(s.title)}</div>${s.duration?`<div style="color:var(--muted);font-size:10px">${esc(s.duration)}</div>`:''}</div><input type="checkbox" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer" onchange="this.closest('.card').style.opacity=this.checked?.5:1"/></div><p style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5">${esc(s.desc)}</p>`;
+      res.appendChild(c);
+    });
+  }catch{ document.getElementById('rm-results').innerHTML='<div class="card" style="padding:13px;color:var(--muted)">Could not generate. Try again.</div>'; }
+  setLd('rm',false);
+}
+
+// ════════════════════════════════════════════
+// DAILY TASKS
+// ════════════════════════════════════════════
+function renderTasks() {
+  const list=document.getElementById('task-list'); list.innerHTML='';
+  TASKS.forEach((t,i)=>{
+    const c=document.createElement('div'); c.className='card fade-up';
+    c.style.cssText=`padding:12px;cursor:pointer;animation-delay:${i*.05}s;border-left:3px solid ${taskDone[i]?'var(--success)':'var(--border)'}`;
+    c.innerHTML=`<div style="display:flex;align-items:center;gap:10px"><div style="font-size:21px">${t.icon}</div><div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;${taskDone[i]?'text-decoration:line-through;opacity:.5':''}">Day ${t.day}: ${t.title}</div><div style="color:var(--muted);font-size:11px;margin-top:1px">${t.desc}</div></div><div style="width:20px;height:20px;border-radius:5px;border:2px solid ${taskDone[i]?'var(--success)':'var(--border)'};background:${taskDone[i]?'var(--success)':'transparent'};display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:#000">${taskDone[i]?'✓':''}</div></div>`;
+    c.onclick=()=>{ taskDone[i]=!taskDone[i]; persistTD(); renderTasks(); updTaskProg(); };
+    list.appendChild(c);
+  });
+  updTaskProg();
+}
+function updTaskProg() {
+  const done=Object.values(taskDone).filter(Boolean).length;
+  const pct=Math.round((done/TASKS.length)*100);
+  document.getElementById('task-bar').style.width=pct+'%';
+  document.getElementById('task-pct').textContent=pct+'%';
+  document.getElementById('task-cnt').textContent=`${done}/${TASKS.length}`;
+}
+function persistTD() {
+  if(!CU) return;
+  const ud=getUD(CU.email); ud.taskDone=taskDone; setUD(CU.email,ud);
+}
+
+// ════════════════════════════════════════════
+// PROBLEM SOLVER
+// ════════════════════════════════════════════
+async function solveProblem() {
+  const p=document.getElementById('sv-input').value.trim();
+  if(!p){toast('⚠️ Describe your problem first');return;}
+  setLd('sv',true); document.getElementById('sv-result').innerHTML='';
+  try{
+    const r=await askClaude(`You are a startup problem solver. Give: 1) Root Causes (2-3 bullets), 2) Step-by-Step Solutions (3-5 steps), 3) Quick Growth Tips (2-3). Keep under 250 words.`,`Problem: ${p}`);
+    const c=document.createElement('div'); c.className='card fade-up'; c.style.padding='15px';
+    c.innerHTML=`<div style="font-size:12px;line-height:1.8;white-space:pre-wrap">${esc(r)}</div>`;
+    document.getElementById('sv-result').appendChild(c);
+  }catch{ document.getElementById('sv-result').innerHTML='<div class="card" style="padding:13px;color:var(--muted)">Error. Try again.</div>'; }
+  setLd('sv',false);
+}
+
+// ════════════════════════════════════════════
+// IDEA ANALYZER
+// ════════════════════════════════════════════
+async function analyzeIdea() {
+  const idea=document.getElementById('an-input').value.trim();
+  if(!idea){toast('⚠️ Enter your startup idea');return;}
+  setLd('an',true); document.getElementById('an-results').innerHTML='';
+  try{
+    const raw=await askClaude(
+      `You are a startup analyst. Respond ONLY in valid JSON, no markdown: {"score":75,"marketDemand":"High|Medium|Low","competition":"High|Medium|Low","targetAudience":"desc","monetization":["m1","m2","m3"],"strengths":["s1","s2"],"risks":["r1","r2"],"verdict":"one sentence"}`,
+      `Startup idea: ${idea}`);
+    const r=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const cFor=v=>v==='High'?'#22d3a5':v==='Low'?'#f43f5e':'#f59e0b';
+    const bFor=v=>v==='High'?'rgba(34,211,165,.15)':v==='Low'?'rgba(244,63,94,.15)':'rgba(245,158,11,.15)';
+    const res=document.getElementById('an-results');
+    const sc=document.createElement('div'); sc.className='card fade-up'; sc.style.cssText='padding:18px;text-align:center';
+    sc.innerHTML=`<div class="gradient-text" style="font-family:'Syne',sans-serif;font-weight:800;font-size:48px">${r.score}</div><div style="color:var(--muted);font-size:12px">Viability Score / 100</div><p style="margin-top:8px;font-size:13px;line-height:1.5">${esc(r.verdict)}</p>`;
+    res.appendChild(sc);
+    const mx=document.createElement('div'); mx.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:9px';
+    [['Market Demand',r.marketDemand],['Competition',r.competition]].forEach(([lb,val])=>{
+      const m=document.createElement('div'); m.className='card fade-up'; m.style.cssText='padding:12px;text-align:center;animation-delay:.1s';
+      m.innerHTML=`<div style="color:var(--muted);font-size:10px;margin-bottom:5px">${lb}</div><div style="font-family:'Syne',sans-serif;font-weight:700;color:${cFor(val)};background:${bFor(val)};padding:3px 10px;border-radius:20px;display:inline-block;font-size:12px">${val}</div>`;
+      mx.appendChild(m);
+    }); res.appendChild(mx);
+    const au=document.createElement('div'); au.className='card fade-up'; au.style.cssText='padding:13px;animation-delay:.15s';
+    au.innerHTML=`<div style="color:var(--muted);font-size:10px;margin-bottom:4px">👥 Target Audience</div><div style="font-size:12px">${esc(r.targetAudience)}</div>`;
+    res.appendChild(au);
+    [['💰 Monetization',r.monetization,'var(--success)'],['✅ Strengths',r.strengths,'var(--accent)'],['⚠️ Risks',r.risks,'#f43f5e']].forEach(([lb,items,col],li)=>{
+      if(!items?.length) return;
+      const c=document.createElement('div'); c.className='card fade-up'; c.style.cssText=`padding:13px;animation-delay:${.2+li*.05}s`;
+      c.innerHTML=`<div style="color:var(--muted);font-size:10px;margin-bottom:8px">${lb}</div>`+items.map((item,i)=>`<div style="font-size:12px;padding:5px 0;${i<items.length-1?'border-bottom:1px solid var(--border)':''};display:flex;gap:6px"><span style="color:${col};flex-shrink:0">→</span>${esc(item)}</div>`).join('');
+      res.appendChild(c);
+    });
+    const sb=document.createElement('button'); sb.className='btn-ghost'; sb.style.cssText='width:100%;padding:10px 0';
+    sb.textContent='⭐ Save Analysis';
+    sb.onclick=()=>saveItem(JSON.stringify({name:idea.slice(0,50),tagline:r.verdict,score:r.score}));
+    res.appendChild(sb);
+  }catch{ document.getElementById('an-results').innerHTML='<div class="card" style="padding:13px;color:var(--muted)">Could not analyze. Try again.</div>'; }
+  setLd('an',false);
+}
+
+// ════════════════════════════════════════════
+// SAVED IDEAS
+// ════════════════════════════════════════════
+function saveItem(jsonStr) {
+  if(!CU){toast('⚠️ Please login first');return;}
+  const item=JSON.parse(jsonStr);
+  const ud=getUD(CU.email); ud.saved=ud.saved||[]; ud.saved.push(item);
+  setUD(CU.email,ud);
+  toast('⭐ Saved!');
+}
+function renderSaved() {
+  const body=document.getElementById('saved-body');
+  if(!CU){body.innerHTML='<p style="color:var(--muted);text-align:center;padding-top:40px">Login to see saved ideas</p>';return;}
+  const ud=getUD(CU.email); const saved=ud.saved||[];
+  if(!saved.length){
+    body.innerHTML=`<div style="text-align:center;padding-top:48px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">⭐</div><p>No saved ideas yet.</p><button class="btn-primary" style="margin-top:16px;max-width:190px;margin-left:auto;margin-right:auto" onclick="navTo('ideas')">Generate Ideas</button></div>`;
+    return;
+  }
+  body.innerHTML='<div style="display:flex;flex-direction:column;gap:10px">'+
+    saved.map((item,i)=>`<div class="card fade-up" style="padding:14px;animation-delay:${i*.05}s;position:relative">
+      <button onclick="delSaved(${i})" style="position:absolute;top:10px;right:11px;background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:3px">✕</button>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;padding-right:24px">${esc(item.name)}</div>
+      <div style="color:var(--muted);font-size:12px">${esc(item.tagline||'')}</div>
+      ${item.income?`<div style="color:var(--success);font-size:11px;margin-top:5px">💰 ${esc(item.income)}</div>`:''}
+      ${item.score?`<div style="color:var(--accent);font-size:11px;margin-top:3px">📊 Score: ${item.score}/100</div>`:''}
+      ${item.difficulty?`<div style="font-size:11px;margin-top:3px;color:var(--muted)">Difficulty: ${esc(item.difficulty)}</div>`:''}
+    </div>`).join('')+'</div>';
+}
+function delSaved(i) {
+  if(!CU) return;
+  const ud=getUD(CU.email); ud.saved.splice(i,1); setUD(CU.email,ud);
+  renderSaved(); toast('🗑️ Removed');
+}
+
+// ════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════
+const v = id => document.getElementById(id)?.value||'';
+function setLd(prefix,on) {
+  const bt=document.getElementById(prefix+'-bt'), ld=document.getElementById(prefix+'-ld');
+  if(bt) bt.classList.toggle('hidden',on);
+  if(ld) ld.classList.toggle('hidden',!on);
+}
+function setE(id,msg){ const e=document.getElementById(id+'-e'); if(e){e.textContent=msg;e.classList.add('show');} }
+function clrE(ids){ ids.forEach(id=>{const e=document.getElementById(id+'-e');if(e){e.textContent='';e.classList.remove('show');}}); }
+function shakeEl(id){ const e=document.getElementById(id);if(!e)return;e.style.animation='shake .4s ease';setTimeout(()=>e.style.animation='',500); }
+function togglePw(id,btn){ const i=document.getElementById(id);const t=i.type==='text';i.type=t?'password':'text';btn.textContent=t?'👁':'🙈'; }
+function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+function hp(pw){ let h=0;for(let i=0;i<pw.length;i++){h=((h<<5)-h)+pw.charCodeAt(i);h|=0;}return h.toString(36); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+let toastT;
+function toast(msg){ const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3200); }
+function updateStrength(pw){
+  let s=0;if(pw.length>=6)s++;if(pw.length>=10)s++;if(/[A-Z]/.test(pw))s++;if(/[0-9]/.test(pw))s++;if(/[^A-Za-z0-9]/.test(pw))s++;
+  const pcts=[0,20,40,60,80,100];const cols=['','#f43f5e','#f59e0b','#f59e0b','#22d3a5','#22d3a5'];const lbs=['','Weak','Fair','Good','Strong','Very Strong'];
+  document.getElementById('str-bar').style.cssText=`width:${pcts[s]}%;background:${cols[s]||'var(--border)'};height:4px;border-radius:4px;transition:width .3s,background .3s;margin-top:5px`;
+  const lbl=document.getElementById('str-lbl'); lbl.textContent=pw.length?lbs[s]:'';lbl.style.color=cols[s]||'var(--muted)';
+}
+// ════════════════════════════════════════════════════════════════
+// COMMUNITY — DATA LAYER
+// ════════════════════════════════════════════════════════════════
+const COMM_KEY = 'aicf_community_posts';
+const NOTIF_KEY = e => 'aicf_notifs_' + e.replace(/[^a-z0-9]/gi,'_');
+
+function getPosts(){ try{return JSON.parse(localStorage.getItem(COMM_KEY)||'[]')}catch{return []} }
+function setPosts(p){ localStorage.setItem(COMM_KEY, JSON.stringify(p)) }
+function getNotifs(){ if(!CU) return []; try{return JSON.parse(localStorage.getItem(NOTIF_KEY(CU.email))||'[]')}catch{return []} }
+function setNotifs(n){ if(!CU) return; localStorage.setItem(NOTIF_KEY(CU.email), JSON.stringify(n)) }
+function addNotif(email, msg, icon='🔔'){
+  try{
+    const k=NOTIF_KEY(email);
+    const n=JSON.parse(localStorage.getItem(k)||'[]');
+    n.unshift({msg, icon, time:Date.now(), read:false});
+    localStorage.setItem(k, JSON.stringify(n.slice(0,50)));
+  }catch{}
+}
+
+// Seed demo posts if none exist
+function seedPosts(){
+  const existing = getPosts();
+  if(existing.length > 0) return;
+  const demos = [
+    {id:'p1',author:'alex_builds',authorName:'Alex Chen',cat:'Idea',title:'Building a micro-SaaS for freelance invoice tracking',desc:'Hey founders! I just validated an idea for a super lightweight invoice tracker built specifically for solo freelancers. 3 potential customers already said they would pay $9/mo. Sharing my validation process here — happy to get feedback!',likes:[],comments:[{id:'c1',author:'sara_startup',authorName:'Sara Kim',text:'This sounds awesome! What was your validation method — cold DMs or landing page?',likes:[],time:Date.now()-3600000,replies:[{id:'r1',author:'alex_builds',authorName:'Alex Chen',text:'Both! I posted on Twitter and also sent 20 cold emails. 3 positive replies!',likes:[],time:Date.now()-1800000}]}],time:Date.now()-86400000,views:142,reported:false},
+    {id:'p2',author:'growthmarco',authorName:'Marco Rivera',cat:'Marketing',title:'How I got 500 Instagram followers in 2 weeks for my food startup',desc:'I just launched my healthy meal prep brand and crossed 500 followers without spending a single dollar. Here is my exact strategy: consistent posting, reels with trending audio, and engaging with 50 accounts per day in my niche. It really works!',likes:['u1','u2','u3'],comments:[{id:'c2',author:'priya_founder',authorName:'Priya Singh',text:'Which time slots worked best for posting reels for you?',likes:[],time:Date.now()-7200000,replies:[]}],time:Date.now()-172800000,views:328,reported:false},
+    {id:'p3',author:'techlaura',authorName:'Laura Mwangi',cat:'Question',title:'Should I build an app or a website first for my startup?',desc:'I am a non-technical founder with a budget of $2000. I want to validate my idea for an online tutoring marketplace. Should I hire someone to build a mobile app, a website, or use no-code tools like Bubble or Webflow? What has worked for you?',likes:['u4'],comments:[{id:'c3',author:'growthmarco',authorName:'Marco Rivera',text:'100% go with Bubble or Webflow first. Validate before building custom. Save your $2k!',likes:['u5'],time:Date.now()-43200000,replies:[{id:'r2',author:'techlaura',authorName:'Laura Mwangi',text:'That is super helpful, thank you! Which one is easier to learn quickly?',likes:[],time:Date.now()-21600000}]}],time:Date.now()-259200000,views:215,reported:false},
+    {id:'p4',author:'priya_founder',authorName:'Priya Singh',cat:'Feedback',title:'Roast my landing page for my AI resume builder',desc:'I have been working on an AI resume builder targeting recent graduates. My landing page is live but conversion rate is only 1.2%. Would love honest feedback on messaging, design, and CTA. Drop your thoughts below and I will return the favor!',likes:['u1','u3','u6','u7'],comments:[{id:'c4',author:'alex_builds',authorName:'Alex Chen',text:'Your headline is too vague. Try something like "Land your dream job in 5 minutes" instead of "AI Resume Builder". Specificity wins.',likes:['u2'],time:Date.now()-10800000,replies:[]}],time:Date.now()-345600000,views:456,reported:false},
+    {id:'p5',author:'sara_startup',authorName:'Sara Kim',cat:'Growth',title:'10 growth hacks I used to grow my Etsy shop to $4k/month',desc:'A year ago I was making zero on Etsy. Today I hit $4,000 in monthly revenue selling digital planners. Here is everything I wish someone had told me: keyword research, Pinterest SEO, bundle pricing, and email list building from day one. Thread below!',likes:['u1','u2','u3','u4','u5','u8'],comments:[{id:'c5',author:'techlaura',authorName:'Laura Mwangi',text:'This is gold! Did you do any paid ads or strictly organic?',likes:['u1'],time:Date.now()-5400000,replies:[{id:'r3',author:'sara_startup',authorName:'Sara Kim',text:'Strictly organic for the first 6 months. Paid only after I had proof of concept!',likes:[],time:Date.now()-3600000}]}],time:Date.now()-432000000,views:789,reported:false},
+    {id:'p6',author:'devdaniel',authorName:'Daniel Osei',cat:'Problem',title:'My app has 200 downloads but zero paying users — help!',desc:'I launched my productivity app 3 months ago and have 200 downloads. I offer a 7-day free trial but zero conversions to paid. My price point is $4.99/month. Is this a pricing problem, a product problem, or a marketing problem? What metrics should I look at?',likes:['u2','u9'],comments:[{id:'c6',author:'priya_founder',authorName:'Priya Singh',text:'First question: are those 200 users actually using the app after day 1? Activation rate is everything before you worry about conversion.',likes:['u3'],time:Date.now()-14400000,replies:[]}],time:Date.now()-518400000,views:304,reported:false},
+  ];
+  setPosts(demos);
+}
+
+// ── Category helpers ────────────────────────────────────────────
+const CAT_CLASS = {Idea:'cat-idea',Question:'cat-question',Feedback:'cat-feedback',Marketing:'cat-marketing',Growth:'cat-growth',Problem:'cat-problem'};
+const CAT_ICON  = {Idea:'💡',Question:'❓',Feedback:'💬',Marketing:'📣',Growth:'📈',Problem:'🔧'};
+function catTag(cat){ return `<span class="cat-tag ${CAT_CLASS[cat]||'cat-idea'}">${CAT_ICON[cat]||'#'} ${esc(cat)}</span>`; }
+
+// ── Avatar helper ───────────────────────────────────────────────
+const GRAD_COLORS=[['#4f6ef7','#7c5cfc'],['#22d3a5','#06b6d4'],['#f59e0b','#f43f5e'],['#a855f7','#ec4899'],['#06b6d4','#22d3a5']];
+function gradFor(name){ const i=name.charCodeAt(0)%GRAD_COLORS.length; return GRAD_COLORS[i]; }
+function miniAvatar(name,size=28){
+  const [c1,c2]=gradFor(name); const letter=(name||'?')[0].toUpperCase();
+  return `<div style="width:${size}px;height:${size}px;border-radius:${Math.floor(size*.3)}px;background:linear-gradient(135deg,${c1},${c2});display:flex;align-items:center;justify-content:center;font-size:${Math.floor(size*.43)}px;font-family:'Syne',sans-serif;font-weight:800;color:#fff;flex-shrink:0">${letter}</div>`;
+}
+
+// ── Time helper ─────────────────────────────────────────────────
+function timeAgo(ts){
+  const diff=(Date.now()-ts)/1000;
+  if(diff<60) return 'just now';
+  if(diff<3600) return Math.floor(diff/60)+'m ago';
+  if(diff<86400) return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
+
+// ════════════════════════════════════════════════════════════════
+// COMMUNITY INIT
+// ════════════════════════════════════════════════════════════════
+let commFilter = 'all';
+let currentPostId = null;
+let communityInited = false;
+
+function initCommunity(){
+  seedPosts();
+  renderFeed();
+  renderTrending();
+  switchCommTab('feed');
+  // Update notif dot
+  updateNotifDot();
+  communityInited = true;
+}
+
+function updateNotifDot(){
+  const notifs = getNotifs();
+  const unread = notifs.filter(n=>!n.read).length;
+  const dot = document.getElementById('notif-dot');
+  if(dot) dot.classList.toggle('hidden', unread===0);
+}
+
+// ════════════════════════════════════════════════════════════════
+// COMMUNITY TABS
+// ════════════════════════════════════════════════════════════════
+function switchCommTab(tab){
+  ['feed','trending','search'].forEach(t=>{
+    document.getElementById('comm-'+t+'-tab').classList.toggle('hidden', t!==tab);
+    document.getElementById('ctab-'+t).classList.toggle('active', t===tab);
+  });
+  if(tab==='trending') renderTrending();
+}
+
+// ════════════════════════════════════════════════════════════════
+// RENDER FEED
+// ════════════════════════════════════════════════════════════════
+function renderFeed(){
+  let posts = getPosts().filter(p=>!p.reported);
+  if(commFilter !== 'all') posts = posts.filter(p=>p.cat===commFilter);
+  posts.sort((a,b)=> b.time - a.time);
+  const el = document.getElementById('feed-list');
+  if(!posts.length){
+    el.innerHTML='<div style="text-align:center;padding:48px 0;color:var(--muted)"><div style="font-size:36px;margin-bottom:12px">🌐</div><p>No posts yet in this category.<br/>Be the first to post!</p></div>';
+    return;
+  }
+  el.innerHTML = posts.map((p,i)=>postCardHTML(p,i)).join('');
+}
+
+function renderTrending(){
+  const posts = getPosts().filter(p=>!p.reported);
+  const scored = posts.map(p=>({...p, score: p.likes.length*2 + p.comments.length*1.5}));
+  scored.sort((a,b)=>b.score-a.score);
+  const el = document.getElementById('trending-list');
+  el.innerHTML = scored.slice(0,8).map((p,i)=>trendingCardHTML(p,i)).join('');
+}
+
+function postCardHTML(p, i){
+  const liked = CU && p.likes.includes(CU.email);
+  return `<div class="post-card fade-up" style="animation-delay:${i*.05}s" onclick="openPost('${p.id}')">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
+      ${miniAvatar(p.authorName,32)}
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" onclick="event.stopPropagation();openUserProfile('${esc(p.author)}','${esc(p.authorName)}')">${esc(p.authorName)}</div>
+        <div style="color:var(--muted);font-size:11px">${timeAgo(p.time)}</div>
+      </div>
+      ${catTag(p.cat)}
+    </div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:5px;line-height:1.3">${esc(p.title)}</div>
+    <div style="color:var(--muted);font-size:12px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(p.desc)}</div>
+    <div style="display:flex;align-items:center;gap:4px;margin-top:10px">
+      <button class="like-btn ${liked?'liked':''}" onclick="event.stopPropagation();toggleLike('${p.id}')" id="like-btn-${p.id}">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="${liked?'var(--danger)':'none'}" stroke="${liked?'var(--danger)':'currentColor'}" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span id="like-cnt-${p.id}">${p.likes.length}</span>
+      </button>
+      <button style="background:none;border:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;font-size:12px;padding:5px 8px;border-radius:8px" onclick="openPost('${p.id}')">
+        💬 <span>${p.comments.length}</span>
+      </button>
+      <div style="flex:1"></div>
+      <span style="font-size:11px;color:var(--muted)">👁 ${p.views||0}</span>
+    </div>
+  </div>`;
+}
+
+function trendingCardHTML(p, rank){
+  const rankColors = ['#f59e0b','#6b7280','#b45309'];
+  const rankEmoji = ['🥇','🥈','🥉'];
+  return `<div class="post-card fade-up" style="animation-delay:${rank*.06}s" onclick="openPost('${p.id}')">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div style="font-size:${rank<3?20:14}px;flex-shrink:0">${rank<3?rankEmoji[rank]:`#${rank+1}`}</div>
+      ${miniAvatar(p.authorName,28)}
+      <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:12px">${esc(p.authorName)}</div></div>
+      ${catTag(p.cat)}
+    </div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:6px">${esc(p.title)}</div>
+    <div style="display:flex;gap:12px;font-size:12px;color:var(--muted)">
+      <span>❤️ ${p.likes.length}</span>
+      <span>💬 ${p.comments.length}</span>
+      <span>👁 ${p.views||0}</span>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// FILTER
+// ════════════════════════════════════════════════════════════════
+function filterPosts(cat, btn){
+  commFilter = cat;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderFeed();
+}
+
+// ════════════════════════════════════════════════════════════════
+// SEARCH
+// ════════════════════════════════════════════════════════════════
+function doSearch(q){
+  const el = document.getElementById('search-results');
+  if(!q.trim()){ el.innerHTML='<div style="text-align:center;padding-top:40px;color:var(--muted);font-size:13px">Start typing to search…</div>'; return; }
+  const posts = getPosts().filter(p=>!p.reported);
+  const kw = q.toLowerCase();
+  const results = posts.filter(p=>
+    p.title.toLowerCase().includes(kw)||
+    p.desc.toLowerCase().includes(kw)||
+    p.authorName.toLowerCase().includes(kw)||
+    p.cat.toLowerCase().includes(kw)
+  );
+  if(!results.length){ el.innerHTML=`<div style="text-align:center;padding-top:40px;color:var(--muted);font-size:13px">No posts found for "<b>${esc(q)}</b>"</div>`; return; }
+  el.innerHTML = results.map((p,i)=>postCardHTML(p,i)).join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// LIKE POST
+// ════════════════════════════════════════════════════════════════
+function toggleLike(postId){
+  if(!CU){ toast('⚠️ Please login to like posts'); return; }
+  const posts = getPosts();
+  const p = posts.find(x=>x.id===postId);
+  if(!p) return;
+  const idx = p.likes.indexOf(CU.email);
+  const liked = idx === -1;
+  if(liked){ p.likes.push(CU.email); }
+  else { p.likes.splice(idx,1); }
+  setPosts(posts);
+  // Update UI in place
+  const btn = document.getElementById('like-btn-'+postId);
+  const cnt = document.getElementById('like-cnt-'+postId);
+  if(btn){
+    btn.classList.toggle('liked', liked);
+    const svg = btn.querySelector('svg');
+    if(svg){ svg.setAttribute('fill', liked?'var(--danger)':'none'); svg.setAttribute('stroke', liked?'var(--danger)':'currentColor'); }
+    if(cnt) cnt.textContent = p.likes.length;
+    if(liked){ btn.classList.add('heart-pop'); setTimeout(()=>btn.classList.remove('heart-pop'),300); }
+  }
+  // Notify post author
+  if(liked && p.author !== CU.email){
+    addNotif(p.author, `${CU.name} liked your post: "${p.title.slice(0,40)}"`, '❤️');
+  }
+  // Refresh post detail if open
+  if(currentPostId===postId) renderPostDetail(postId);
+}
+
+// ════════════════════════════════════════════════════════════════
+// CREATE POST
+// ════════════════════════════════════════════════════════════════
+function publishPost(){
+  if(!CU){ toast('⚠️ Please login to post'); return; }
+  const title = document.getElementById('cp-title').value.trim();
+  const desc  = document.getElementById('cp-desc').value.trim();
+  const cat   = document.getElementById('cp-cat').value;
+  if(!title){ toast('⚠️ Please add a title'); return; }
+  if(!desc)  { toast('⚠️ Please add a description'); return; }
+  if(!cat)   { toast('⚠️ Please select a category'); return; }
+  const post = {
+    id: 'p'+Date.now(),
+    author: CU.email,
+    authorName: CU.name,
+    cat, title, desc,
+    likes:[], comments:[],
+    time: Date.now(),
+    views: 0,
+    reported: false
+  };
+  const posts = getPosts();
+  posts.unshift(post);
+  setPosts(posts);
+  // Clear form
+  document.getElementById('cp-title').value='';
+  document.getElementById('cp-desc').value='';
+  document.getElementById('cp-cat').value='';
+  document.getElementById('cp-desc-cnt').textContent='0 / 1000';
+  toast('🚀 Post published!');
+  navTo('community');
+  renderFeed();
+}
+// Character counter
+document.getElementById('cp-desc').addEventListener('input', function(){
+  document.getElementById('cp-desc-cnt').textContent = this.value.length + ' / 1000';
+});
+
+// ════════════════════════════════════════════════════════════════
+// POST DETAIL
+// ════════════════════════════════════════════════════════════════
+function openPost(postId){
+  currentPostId = postId;
+  // Increment views
+  const posts = getPosts();
+  const p = posts.find(x=>x.id===postId);
+  if(!p) return;
+  p.views = (p.views||0)+1;
+  setPosts(posts);
+  renderPostDetail(postId);
+  show('post-detail');
+}
+
+function renderPostDetail(postId){
+  const posts = getPosts();
+  const p = posts.find(x=>x.id===postId);
+  if(!p) return;
+  const liked = CU && p.likes.includes(CU.email);
+  const isOwner = CU && p.author === CU.email;
+
+  document.getElementById('pd-body').innerHTML = `
+    <div class="card" style="padding:15px;margin-bottom:4px">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+        ${miniAvatar(p.authorName,36)}
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13px;cursor:pointer" onclick="openUserProfile('${esc(p.author)}','${esc(p.authorName)}')">${esc(p.authorName)}</div>
+          <div style="color:var(--muted);font-size:11px">${timeAgo(p.time)} · ${p.views||0} views</div>
+        </div>
+        ${catTag(p.cat)}
+      </div>
+      <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-bottom:9px;line-height:1.3">${esc(p.title)}</h2>
+      <p style="font-size:13px;line-height:1.7;color:var(--text)">${esc(p.desc)}</p>
+      <div style="display:flex;align-items:center;gap:4px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        <button class="like-btn ${liked?'liked':''}" onclick="toggleLike('${p.id}')" id="like-btn-${p.id}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="${liked?'var(--danger)':'none'}" stroke="${liked?'var(--danger)':'currentColor'}" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span id="like-cnt-${p.id}">${p.likes.length}</span> Likes
+        </button>
+        <div style="flex:1"></div>
+        ${isOwner ? `<button onclick="deleteMyPost('${p.id}')" style="background:rgba(244,63,94,.1);color:var(--danger);border:1px solid rgba(244,63,94,.2);border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer">🗑 Delete</button>` : ''}
+      </div>
+    </div>`;
+
+  // Update comment header
+  document.getElementById('pd-comment-count').textContent = `💬 ${p.comments.length} Comment${p.comments.length!==1?'s':''}`;
+
+  // My avatar in comment box
+  if(CU){
+    const av = document.getElementById('pd-my-avatar');
+    const [c1,c2]=gradFor(CU.name);
+    av.style.background=`linear-gradient(135deg,${c1},${c2})`;
+    av.textContent=CU.name[0].toUpperCase();
+  }
+
+  // Render comments
+  const cl = document.getElementById('pd-comments-list');
+  if(!p.comments.length){
+    cl.innerHTML='<div style="text-align:center;padding:28px 0;color:var(--muted);font-size:13px">No comments yet. Be the first to reply! 💬</div>';
+    return;
+  }
+  cl.innerHTML = p.comments.map(c=>commentHTML(c, postId)).join('');
+}
+
+function commentHTML(c, postId){
+  const myLike = CU && c.likes.includes(CU.email);
+  const repliesHTML = (c.replies||[]).map(r=>{
+    const rl = CU && r.likes.includes(CU.email);
+    return `<div class="reply-item">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+        ${miniAvatar(r.authorName,22)}
+        <span style="font-weight:600;font-size:12px">${esc(r.authorName)}</span>
+        <span style="color:var(--muted);font-size:10px">${timeAgo(r.time)}</span>
+      </div>
+      <div style="font-size:12px;line-height:1.5;color:var(--text);padding-left:29px">${esc(r.text)}</div>
+      <div style="padding-left:29px;margin-top:4px">
+        <button class="like-btn ${rl?'liked':''}" onclick="likeComment('${postId}','${c.id}','${r.id}')" style="font-size:11px;padding:3px 6px">
+          ❤️ <span id="rlc-${r.id}">${r.likes.length}</span>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="comment-item" id="cmt-${c.id}">
+    <div style="display:flex;align-items:flex-start;gap:8px">
+      ${miniAvatar(c.authorName,28)}
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <span style="font-weight:600;font-size:13px">${esc(c.authorName)}</span>
+          <span style="color:var(--muted);font-size:11px">${timeAgo(c.time)}</span>
+        </div>
+        <div style="font-size:13px;line-height:1.6">${esc(c.text)}</div>
+        <div style="display:flex;gap:4px;margin-top:5px">
+          <button class="like-btn ${myLike?'liked':''}" onclick="likeComment('${postId}','${c.id}',null)" style="font-size:11px;padding:4px 8px">
+            ❤️ <span id="clc-${c.id}">${c.likes.length}</span>
+          </button>
+          <button onclick="showReplyBox('${postId}','${c.id}')" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;padding:4px 8px;border-radius:6px">↩ Reply</button>
+        </div>
+        <div id="reply-box-${c.id}" class="hidden" style="margin-top:8px;display:flex;gap:7px;align-items:flex-start">
+          ${CU ? miniAvatar(CU.name,22) : ''}
+          <div style="flex:1">
+            <textarea id="reply-input-${c.id}" rows="2" placeholder="Write a reply…" style="font-size:12px"></textarea>
+            <div style="display:flex;gap:6px;margin-top:5px">
+              <button class="btn-primary" style="padding:6px 12px;font-size:11px;width:auto" onclick="postReply('${postId}','${c.id}')">Reply</button>
+              <button class="btn-ghost" style="padding:6px 10px;font-size:11px" onclick="hideReplyBox('${c.id}')">Cancel</button>
+            </div>
+          </div>
+        </div>
+        ${repliesHTML}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// COMMENTS & REPLIES
+// ════════════════════════════════════════════════════════════════
+function postComment(){
+  if(!CU){ toast('⚠️ Please login to comment'); return; }
+  const text = document.getElementById('pd-comment-input').value.trim();
+  if(!text){ toast('⚠️ Write something first'); return; }
+  const posts = getPosts();
+  const p = posts.find(x=>x.id===currentPostId);
+  if(!p) return;
+  const c = {id:'c'+Date.now(),author:CU.email,authorName:CU.name,text,likes:[],time:Date.now(),replies:[]};
+  p.comments.push(c);
+  setPosts(posts);
+  document.getElementById('pd-comment-input').value='';
+  // Notify
+  if(p.author !== CU.email) addNotif(p.author, `${CU.name} commented on your post: "${p.title.slice(0,40)}"`, '💬');
+  renderPostDetail(currentPostId);
+  toast('💬 Comment posted!');
+  updateNotifDot();
+}
+
+function showReplyBox(postId, commentId){
+  if(!CU){ toast('⚠️ Please login to reply'); return; }
+  document.getElementById('reply-box-'+commentId).classList.remove('hidden');
+}
+function hideReplyBox(commentId){
+  document.getElementById('reply-box-'+commentId).classList.add('hidden');
+}
+function postReply(postId, commentId){
+  const inp = document.getElementById('reply-input-'+commentId);
+  const text = inp.value.trim();
+  if(!text){ toast('⚠️ Write something first'); return; }
+  const posts = getPosts();
+  const p = posts.find(x=>x.id===postId);
+  const c = p?.comments.find(x=>x.id===commentId);
+  if(!c) return;
+  c.replies = c.replies||[];
+  c.replies.push({id:'r'+Date.now(),author:CU.email,authorName:CU.name,text,likes:[],time:Date.now()});
+  setPosts(posts);
+  // Notify comment author
+  if(c.author !== CU.email) addNotif(c.author, `${CU.name} replied to your comment`, '↩️');
+  renderPostDetail(postId);
+  toast('↩ Reply posted!');
+  updateNotifDot();
+}
+
+function likeComment(postId, commentId, replyId){
+  if(!CU){ toast('⚠️ Please login to like'); return; }
+  const posts = getPosts();
+  const p = posts.find(x=>x.id===postId);
+  const c = p?.comments.find(x=>x.id===commentId);
+  if(!c) return;
+  let target = c;
+  if(replyId) target = (c.replies||[]).find(r=>r.id===replyId);
+  if(!target) return;
+  const idx = target.likes.indexOf(CU.email);
+  if(idx===-1) target.likes.push(CU.email);
+  else target.likes.splice(idx,1);
+  setPosts(posts);
+  renderPostDetail(postId);
+}
+
+// ════════════════════════════════════════════════════════════════
+// DELETE / REPORT
+// ════════════════════════════════════════════════════════════════
+function deleteMyPost(postId){
+  if(!confirm('Delete this post?')) return;
+  const posts = getPosts().filter(p=>p.id!==postId);
+  setPosts(posts);
+  navTo('community');
+  toast('🗑️ Post deleted');
+}
+function reportPost(){
+  if(!currentPostId){ return; }
+  if(!confirm('Report this post as inappropriate?')) return;
+  const posts = getPosts();
+  const p = posts.find(x=>x.id===currentPostId);
+  if(p){ p.reported=true; setPosts(posts); }
+  navTo('community');
+  toast('✅ Post reported. Thanks for keeping the community safe.');
+}
+
+// ════════════════════════════════════════════════════════════════
+// USER PROFILE (community)
+// ════════════════════════════════════════════════════════════════
+function communityBack(){ navTo('community'); }
+function openUserProfile(authorEmail, authorName){
+  const posts = getPosts().filter(p=>p.author===authorEmail && !p.reported);
+  const totalLikes = posts.reduce((sum,p)=>sum+p.likes.length,0);
+  const totalComments = posts.reduce((sum,p)=>sum+p.comments.length,0);
+  const [c1,c2]=gradFor(authorName);
+  document.getElementById('up-avatar').style.background=`linear-gradient(135deg,${c1},${c2})`;
+  document.getElementById('up-avatar').textContent=authorName[0].toUpperCase();
+  document.getElementById('up-title').textContent=authorName;
+  document.getElementById('up-name').textContent=authorName;
+  document.getElementById('up-joined').textContent='Community Member';
+  document.getElementById('up-posts-cnt').textContent=posts.length;
+  document.getElementById('up-likes-cnt').textContent=totalLikes;
+  document.getElementById('up-comments-cnt').textContent=totalComments;
+  const list = document.getElementById('up-posts-list');
+  if(!posts.length){ list.innerHTML='<p style="color:var(--muted);font-size:13px">No posts yet.</p>'; }
+  else{ list.innerHTML = posts.map((p,i)=>postCardHTML(p,i)).join(''); }
+  show('user-profile');
+}
+
+// ════════════════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ════════════════════════════════════════════════════════════════
+function renderNotifs(){
+  const notifs = getNotifs();
+  const el = document.getElementById('notifs-list');
+  if(!notifs.length){
+    el.innerHTML='<div style="text-align:center;padding-top:60px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">🔔</div><p>No notifications yet</p></div>';
+    return;
+  }
+  el.innerHTML = notifs.map(n=>`
+    <div class="notif-item ${n.read?'':'unread'}">
+      <div style="font-size:20px;flex-shrink:0">${n.icon}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;line-height:1.4">${esc(n.msg)}</div>
+        <div style="color:var(--muted);font-size:11px;margin-top:2px">${timeAgo(n.time)}</div>
+      </div>
+    </div>`).join('');
+  // Mark all as read
+  const updated = notifs.map(n=>({...n,read:true}));
+  setNotifs(updated);
+  updateNotifDot();
+}
+function clearNotifs(){
+  setNotifs([]);
+  renderNotifs();
+  updateNotifDot();
+}
+// ── end community ──
+// Close modals on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.add('hidden');});});
+</script>
+</body>
+</html>
